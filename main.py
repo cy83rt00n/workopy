@@ -2,6 +2,8 @@ import os
 import pathlib
 import sys
 import cli
+import yaml
+import pprint
 
 worcopy_root_dir = None
 assets_root_dir = None
@@ -150,26 +152,56 @@ class Worko:
 
 
 class WorkoCopyNamePatterns():
+    """
+        WorkoCopyNamePatterns - provides copy name generation functions
+    """
 
-    def port_based_copy_pattern(self, project_name):
+
+    def port_based_copy_pattern(self, project_name):    
+        """
+            pattern_name: port_based
+        """
         print(f"Port based copy pattern for {project_name}")
 
 
+    def autoincrement_copy_pattern(self, project_name):
+        """
+            pattern_name: autoincrement
+        """
+        print(f"Port based copy pattern for {project_name}")
+
+
+def eval_config_value(value):
+    ev_value = eval(value)
+
+    if isinstance(ev_value,range):
+        ev_value = list(ev_value)
+
+    return ev_value
 
 
 def main():
 
     worko = Worko()
 
-    # worko.create_project_dir('company/the-project/')
-    # worko.create_project_copy_dir('company/the-project')
-
     # worko.welcome()
 
-    pattern_name = 'port_based_copy_pattern'
-    worko.make_copy_by_pattern(pattern_name)("company\\the-project")    
+    # pattern_name = 'port_based_copy_pattern'
+    # worko.make_copy_by_pattern(pattern_name)("company\\the-project")    
 
-    # for sub in pathlib.Path(worcopy_root_dir).iterdir():
-    #     print(sub)
+    y = yaml.safe_load(pathlib.Path("./port_based.yaml").open())
+
+    copyname_parts = dict()
+    
+    for part_name,rule in y['copy_name_parts'].items():
+        if isinstance(rule,(dict)):
+            copyname_parts[part_name] = eval_config_value(rule['eval'])
+        if isinstance(rule,(str)):
+            copyname_parts[part_name] = rule
+
+    pprint.pprint(copyname_parts)
+
+    methods = [method for method in WorkoCopyNamePatterns.__dict__ if callable(WorkoCopyNamePatterns().__getattribute__(method))]
+    pprint.pprint(methods)
 
 main()

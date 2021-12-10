@@ -1,0 +1,6 @@
+copy_name_parts:
+    port: 
+        eval: "range(44000,44010)"
+    project: "iv-bitrix"
+    profiles:
+        eval: "['master','shared','replica','shop','knowledge']"
